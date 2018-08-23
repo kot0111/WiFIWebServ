@@ -1,3 +1,6 @@
+//Проект веб сервера IOT
+//Код для Arduino UNO
+//Автор - Kot0111
 #include <Servo.h>
 #include <SoftwareSerial.h>
 #include <SPI.h>
@@ -7,6 +10,8 @@
 SoftwareSerial esp(4, 5);
 Servo myServo;
 void setup() {
+// Настройка GPIO
+//Запуск serial
   esp.begin(9600);
   pinMode(REL_PIN, OUTPUT);
   pinMode(2, OUTPUT);
@@ -19,7 +24,7 @@ void setup() {
 
 }
 void loop() {
-
+//Обработка входящих запросов
   String command = esp.readStringUntil('\n');
   command.trim();
   if (command == "turn1On") {
@@ -32,7 +37,7 @@ void loop() {
   if (command == "tempUpd") {
     float voltage = analogRead(TEMP_PIN) / 1024.0 * 5.0 - 0.5;
     float temp = voltage * 100.0;
-    esp.println  (temp);
+    esp.println  (temp);//Отправка данных о температуре на ESP8266
   }
   if (command == "Servo180") {
       digitalWrite(2,HIGH);

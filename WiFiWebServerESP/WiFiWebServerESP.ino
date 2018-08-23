@@ -1,4 +1,6 @@
-
+//Проект веб сервера IOT
+//Код для ESP8266
+//Автор - Kot0111
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
 #include <ESP8266WebServer.h>
@@ -7,7 +9,7 @@
 MDNSResponder mdns;
 String instring;
 
-// Wi-Fi
+//Настройки Wi-Fi
 const char* ssid = "SSID";
 const char* password = "Password";
 
@@ -22,7 +24,7 @@ ESP8266WebServer server(80);
   int SERVO_ACT = 0;
 
 void setup(void){
-  // preparing GPIOs
+
 
   delay(100);
   Serial.begin(9600);
@@ -30,7 +32,7 @@ void setup(void){
   WiFi.config(ip, gateway, subnet);
 
 
-  // Wait for connection
+  // Ожидание подключения
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
   }
@@ -38,10 +40,14 @@ void setup(void){
   if (mdns.begin("esp8266", WiFi.localIP())) {
   }
   
-  //+++++++++++++++++++++++ START  Relay-1 ++++++++++++++++++++
+
   server.on("/", [](){
     server.send(200, "text/html", webPage());
   });
+
+//Описание элементов управления
+//+++++++++++++++++++++++ START  Relay-1 ++++++++++++++++++++
+
   server.on("/socket1On", [](){
     rel_act = 1;
     Serial.println("turn1On");
@@ -60,15 +66,10 @@ void setup(void){
      //+++++++++++++++++++++++ START  temp-1 ++++++++++++++++++++
 
 server.on("/temp", [](){
-    Serial.println("tempUpd");
-    delay(200);
-    if (Serial.available() > 0){
-     instring = Serial.readStringUntil('\n');
-     }
     server.send(200, "text/html", webPage());
     delay(100);
-    
-  });
+}    
+  );
      //+++++++++++++++++++++++ END  temp-1 ++++++++++++++++++++ 
 
       //+++++++++++++++++++++++ START  Servo-1 ++++++++++++++++++++
@@ -98,7 +99,7 @@ server.on("/temp", [](){
 void loop(void){
   server.handleClient();
 } 
-
+//Описание веб страницы
 String webPage()
 {
   String web; 
@@ -119,6 +120,11 @@ String webPage()
   // ++++++++ Relay-1 +++++++++++++
   
   // ========Temp-1=============
+   Serial.println("tempUpd");
+    while (Serial.available() ==0){}
+    if (Serial.available() > 0){
+     instring = Serial.readStringUntil('\n');
+     }
   web += "<div style=\"text-align:center;margin-top: 20px;\"><a href=\"temp\"><button style=\"width:158px;\">Temp: " +instring+ "</button></a></div>";
   // ========Temp-1=============
 
